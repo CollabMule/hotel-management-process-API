@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="Implementation-test-suite.xml" />
+	<munit:test name="Implementation-test-suite-getCustomerByIdImplTest" doc:id="2a160af4-cde9-40ff-b2d4-c3ad248c9d95" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="459d67e5-afed-4790-89d5-f598dd31c1c0" >
+				<munit:attributes value="#[{uriParams: {'customerId' : '200'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getCustomerByIdImpl" doc:id="4cb24cef-ae4c-43ca-bb0f-ddf526e69de2" name="getCustomerByIdImpl"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="c36dd5b0-da9d-48e6-97fb-cd81514da3f6" message="payload is empty" expression="#[payload]" is='#[MunitTools::equalTo("No customers found for the given ID")]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Implementation-test-suite-getHotelBookingByIdImplTest" doc:id="06ce6463-cc1b-415b-aa12-aff54294a11f" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="ecdd9d40-9723-431f-b52e-e3849da3a09b" >
+				<munit:attributes value="#[{uriParams: {'customerId': '20', 'hotelBookingId':'199'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getHotelBookingByIdImpl" doc:id="357310a1-fbdc-4481-82b5-dcd221d56204" name="getHotelBookingByIdImpl"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="d28edb46-98cc-4303-a194-2dcbfdb38892" message="Expected : NotNull Found: Null" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Implementation-test-suite-getTheHotelWithHotelIdTest" doc:id="26c5d80d-6f04-4419-8b05-59c1c506681d" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="f13846c1-c909-48f0-a7e1-247404e1cbae" >
+				<munit:attributes value="#[&#10;	{&#10;		uriParams: {&#10;			'hotelId' : '2'&#10;		}&#10;}&#10;]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getTheHotelWithHotelId" doc:id="808fc69b-7dff-4937-9415-7f831fdd33c7" name="getTheHotelWithHotelId"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="3ccdf897-db8a-4b19-b0b6-120b33b2db7a" is="#[MunitTools::notNullValue()]" message="Expected Not Null" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

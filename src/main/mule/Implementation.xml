@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:oyo-hotels-restapi="http://www.mulesoft.org/schema/mule/oyo-hotels-restapi" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:make-my-trip-api="http://www.mulesoft.org/schema/mule/make-my-trip-api"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/make-my-trip-api http://www.mulesoft.org/schema/mule/make-my-trip-api/current/mule-make-my-trip-api.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/oyo-hotels-restapi http://www.mulesoft.org/schema/mule/oyo-hotels-restapi/current/mule-oyo-hotels-restapi.xsd">
+	<make-my-trip-api:config name="Make_My_Trip_API_Config" doc:name="Make My Trip API Config" doc:id="5cdd4a01-2c61-4d35-98e4-10d155420317" property_client-id="64c6642b79164c5b9fa37c4eb23c4900" property_client-secret="a7270f265aec42eE9807E2C67aB74355" />
+	<oyo-hotels-restapi:config name="OYO_Hotels_REST_API_Config" doc:name="OYO Hotels REST API Config" doc:id="29f6f8a2-f444-4759-8da1-c771bde86b10" property_host="oyo-hotels-api.us-e2.cloudhub.io" property_protocol="HTTP" property_port="80" property_basePath="/api"/>
+	<configuration doc:name="Configuration" doc:id="6322cd75-6e3c-461b-8214-e972abdf07d2" defaultErrorHandler-ref="GlobalErrorHandler" />
+	<error-handler name="GlobalErrorHandler" doc:id="51c14490-f403-4d04-85a7-687c6455346b" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="Copy_of_On Error Propagate" doc:id="a5f9dffb-c8af-4a86-9c93-1487dbc2c9b6" type="MAKE-MY-TRIP-API:BAD_REQUEST, MAKE-MY-TRIP-API:CONNECTIVITY, MAKE-MY-TRIP-API:INTERNAL_SERVER_ERROR, MAKE-MY-TRIP-API:SERVICE_UNAVAILABLE, MAKE-MY-TRIP-API:TIMEOUT, MAKE-MY-TRIP-API:UNAUTHORIZED" >
+			<logger level="ERROR" doc:name="Logger" doc:id="d0f8b802-5af8-4251-be59-0fb5a0cbba54" message="Hotel Management System API is Down." />
+			<ee:transform doc:name="Transform Message" doc:id="4528d14f-0c05-4560-bfeb-f12f9afdce1f" >
+				<ee:message >
+					<ee:set-payload ><![CDATA["Currently Hotel Management is Not Available, Please Try after Sometime"]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[503]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4e7c0fc3-ac35-476e-82df-938e2de45262" type="OYO-HOTELS-RESTAPI:BAD_REQUEST, OYO-HOTELS-RESTAPI:CONNECTIVITY, OYO-HOTELS-RESTAPI:INTERNAL_SERVER_ERROR, OYO-HOTELS-RESTAPI:TIMEOUT" >
+			<logger level="ERROR" doc:name="Logger" doc:id="f577111c-d727-4651-9b58-801db1bc2ef5" message="OYO Hotel System API is Down" />
+			<ee:transform doc:name="Transform Message" doc:id="81c656b9-e405-48e0-895a-59a1368ce3f5" >
+				<ee:message >
+					<ee:set-payload ><![CDATA["Currently Hotel Management is Not Available, Please Try after Sometime"]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[503]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-propagate>
+	</error-handler>
+	<flow name="getCustomerByIdImpl" doc:id="ecf6524e-9b7d-4e0a-8921-267b36fdc25a" >
+		<make-my-trip-api:get-customers-by-id doc:name="Get Customers By ID" doc:id="96fa1f34-cfcb-4434-9a7f-2dd9f20dacc7" config-ref="Make_My_Trip_API_Config" customer-id="#[attributes.uriParams.customerId]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="dc828ac4-4b0c-4a3a-8601-75db058919dd" message="#[payload]"/>
+	</flow>
+	<flow name="getHotelBookingByIdImpl" doc:id="2b49d1b7-25b4-4e99-9875-5350c1076bcc" >
+		<scatter-gather doc:name="Scatter-Gather" doc:id="5e115db0-5035-426b-9f79-a2124fe01c20" maxConcurrency="4">
+			<route>
+				<make-my-trip-api:get-hotelbooking-by-id doc:name="Get HotelBooking by ID" doc:id="09e3cc65-1fc6-4144-b390-d280a963bc40" config-ref="Make_My_Trip_API_Config" customer-id="#[attributes.uriParams.customerId]" hotel-booking-id="#[attributes.uriParams.hotelBookingId]" />
+			</route>
+			<route>
+				<make-my-trip-api:get-hotelbooking-by-id doc:name="Get HotelBooking by ID" doc:id="4560cab3-0965-4a67-b36d-9660c14516d7" config-ref="Make_My_Trip_API_Config" customer-id="#[attributes.uriParams.customerId]" hotel-booking-id="#[attributes.uriParams.hotelBookingId]" />
+				<oyo-hotels-restapi:get-the-hotel-with-the-hotel-id doc:name="Get The Hotel With the Hotel Id" doc:id="34b8b83f-5629-4010-850f-9351e0a842ee" config-ref="OYO_Hotels_REST_API_Config" hotel-id="#[payload.hotelId]" />
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message" doc:id="df1f846c-96e2-4d49-86b1-7a36dc369ae2">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+ if(isEmpty(payload."0"))
+ 	message:"No Details Found"
+ else
+	flatten(payload..payload)
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="ERROR" doc:name="Logger" doc:id="6ae10fcd-51a3-4082-bc19-4a01817ddb49" message='FLow Ended.' />
+	</flow>
+	<flow name="getTheHotelWithHotelId" doc:id="164d88b6-6f0f-4ba8-8db2-45ace0bae03b" >
+		<oyo-hotels-restapi:get-the-hotel-with-the-hotel-id doc:name="Get The Hotel With the Hotel Id" doc:id="3a7ac6a0-ef2a-426f-9dbe-aa6762a92b96" config-ref="OYO_Hotels_REST_API_Config" hotel-id="#[attributes.uriParams.hotelId]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d00aad56-cd1a-4806-9540-4d9ef1f47543" message="#[payload]"/>
+	</flow>
+</mule>

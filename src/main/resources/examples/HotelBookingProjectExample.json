@@ -1,0 +1,27 @@
+[{
+     "customerId": 1345,
+     "bookingId": 4334,
+     "hotelName": "Oyo 1123 Mayura Nandan",
+     "numberOfRooms": 33,
+     "city": "Bengaluru",
+     "price": 1200,
+     "ac": "true",
+     "identification": "Aadhar",
+     "year": "2021",
+     "startDate": "26 NOV 2021",
+     "endDate": "28 NOV 2021"
+},
+{
+     "customerId": 1113,
+     "bookingId": 4335,
+     "hotelName": "Oyo 1124 Mayura Nandan",
+     "numberOfRooms": 33,
+     "city": "Bengaluru",
+     "price": 1200,
+     "ac": "true",
+     "identification": "Aadhar",
+     "year": "2021",
+     "startDate": "26 NOV 2021",
+     "endDate": "28 NOV 2021"
+}
+]

@@ -1,0 +1,44 @@
+#%RAML 1.0
+title: Booking Process API
+types:
+  Customer: !include dataTypes/CustomerDataType.raml
+  Hotel: !include dataTypes/HotelBookingDataType.raml
+  OYOHotels: !include dataTypes/HotelDataType.raml
+
+/customer:
+  /{customerId}:
+    /hotelBooking:
+      /{hotelBookingId}:
+        get:
+          description: Get the Hotel Booking Detail
+          displayName: Get Hotel Booking Details
+          responses:
+            200:
+              body:
+                application/json:
+                  example: !include examples/HotelBookingExample.raml
+                  type: Hotel
+    get:
+      description: Get The Customer Details
+      displayName: Cusotmer Details
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include examples/CustomerExample.raml
+              type: Customer
+
+/hotel:
+  /{hotelId}:
+    get:
+      description: Getting the Hotel ID
+      displayName: Hotel Id
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include examples/HotelExample.raml
+              type: OYOHotels
+
+      
+            
